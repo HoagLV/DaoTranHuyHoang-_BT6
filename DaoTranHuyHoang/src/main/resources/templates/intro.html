@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới thiệu bản thân</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1d2671, #c33764);
+            color: #ffffff;
+        }
+
+        .card {
+            width: min(90%, 620px);
+            padding: 36px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0 0 18px;
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.2;
+        }
+
+        p {
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        .label {
+            color: #ffd6e7;
+            font-weight: 600;
+        }
+        .actions {
+            margin-top: 22px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: #ffd6e7;
+            color: #5a164a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<main class="card">
+    <h1 th:text="'Xin chào, mình là ' + ${profile.fullName}">Xin chào, mình là ...</h1>
+    <p><span class="label">Nhóm:</span> <span th:text="${profile.groupName}">...</span></p>
+    <p><span class="label">MSSV:</span> <span th:text="${profile.studentId}">...</span></p>
+    <div class="actions">
+        <a class="btn" href="/edit">Chỉnh sửa</a>
+    </div>
+</main>
+</body>
+</html>

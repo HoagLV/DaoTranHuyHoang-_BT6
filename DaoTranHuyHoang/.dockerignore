@@ -1,0 +1,12 @@
+.git
+.mvn
+target
+Dockerfile
+docker-compose.yml
+.idea
+.vscode
+node_modules
+*.iml
+*.log
+**/*.swp
+**/.DS_Store

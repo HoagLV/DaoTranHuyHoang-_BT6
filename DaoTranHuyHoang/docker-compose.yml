@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: dthh-mysql
+    environment:
+      - MYSQL_DATABASE=dthh
+      - MYSQL_USER=appuser
+      - MYSQL_PASSWORD=apppass
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - TZ=Asia/Ho_Chi_Minh
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+07:00
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uappuser", "-papppass"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  app:
+    build: .
+    image: dthh2/dthh2:v3
+    container_name: dthh-app
+    environment:
+      - SPRING_PROFILES_ACTIVE=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=dthh
+      - DB_USERNAME=appuser
+      - DB_PASSWORD=apppass
+      - TZ=Asia/Ho_Chi_Minh
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+volumes:
+  db_data:
