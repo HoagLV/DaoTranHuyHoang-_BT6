@@ -25,6 +25,7 @@ jobs:
 
       # 3. Build project
       - name: Build with Maven
+        working-directory: ./DaoTranHuyHoang
         run: mvn clean package -DskipTests
 
       # 4. Login Docker Hub
@@ -36,10 +37,10 @@ jobs:
 
       # 5. Build & Push Docker image
       - name: Build and push Docker image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./DaoTranHuyHoang
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/springboot-app:latest
-            ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.run_number }}
+              ${{ secrets.DOCKER_USERNAME }}/springboot-app:latest
+              ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.run_number }}
