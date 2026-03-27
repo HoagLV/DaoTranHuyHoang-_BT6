@@ -44,3 +44,30 @@ jobs:
           tags: |
               ${{ secrets.DOCKER_USERNAME }}/springboot-app:latest
               ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.run_number }}
+      # 6. Triển khai lên DevOps Classroom (Bước mới thêm vào)
+      - name: Triển khai lên DevOps Classroom
+        run: |
+          # Tự động lấy tên Repo từ GitHub Secret để đồng bộ với bước trên
+          REPO="${{ secrets.DOCKER_USERNAME }}/springboot-app"
+          CONTAINER_PORT=80
+          
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOY_URL }}?repo=$REPO&tag=latest&slot=2&container_port=$CONTAINER_PORT&strict_container_port=0")
+          
+          # Tách nội dung JSON và HTTP Code
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          CODE=$(echo "$RESPONSE" | tail -n1)
+          
+          echo "Webhook HTTP Status: $CODE"
+          
+          if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 300 ]; then
+            echo "Deploy thất bại. Xem chi tiết bên dưới:"
+            echo "::group::Chi tiết webhook JSON"
+            echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
+            echo "::endgroup::"
+            exit 1
+          fi
+          
+          echo "Deploy thành công lên DevOps Classroom."
+          echo "::group::Chi tiết kết quả trả về"
+          echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
+          echo "::endgroup::"
