@@ -46,39 +46,26 @@ jobs:
               ${{ secrets.DOCKER_USERNAME }}/springboot-app:${{ github.run_number }}
       # 6. Triển khai lên DevOps Classroom (Bước mới thêm vào)
       - name: Triển khai lên DevOps Classroom
-
         run: |
-
-          REPO="dthh2/dthh2:v4"
-
-          CONTAINER_PORT=80
-
-          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOY_URL }}?repo=$REPO&tag=latest&slot=2&container_port=$CONTAINER_PORT&strict_container_port=0")
-
-          BODY=$(echo "$RESPONSE" | sed "$d")
-
+          REPO="dthh2/dthh2"
+          TAG="v4"
+          CONTAINER_PORT=80  # Đổi từ 21210 thành 80
+          
+          # Gửi Webhook (Nhớ kiểm tra DEPLOY_URL trong Secrets nhé!)
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOYURL }}?repo=$REPO&tag=$TAG&slot=2&container_port=$CONTAINER_PORT&strict_container_port=0")
+          
+          BODY=$(echo "$RESPONSE" | sed '$d')
           CODE=$(echo "$RESPONSE" | tail -n1)
-
-          echo "Webhook HTTP: $CODE"
-
-          if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 300 ]; then
-
-            echo "Deploy thất bại. Xem chi tiết trong nhóm log bên dưới."
-
-            echo "::group::Chi tiết webhook JSON"
-
-            echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
-
-            echo "::endgroup::"
-
+          
+          echo "Webhook Status: $CODE"
+          if [ "$CODE" -eq 200 ]; then
+            echo "✅ Deploy lên Port 80 thành công!"
+          else
+            echo "❌ Deploy thất bại. Mã lỗi: $CODE"
             exit 1
-
           fi
-
-          echo "Deploy thành công."
-
-          echo "::group::Chi tiết webhook JSON"
-
+          
+          echo "✅ Deploy thành công bản $TAG_NAME lên DevOps Classroom!"
+          echo "::group::Kết quả trả về"
           echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
-
           echo "::endgroup::"
