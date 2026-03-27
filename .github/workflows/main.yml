@@ -47,29 +47,28 @@ jobs:
       # 6. Triển khai lên DevOps Classroom (Bước mới thêm vào)
       - name: Triển khai lên DevOps Classroom
         run: |
-          # Sửa lại đúng tên Repo và Tag v4 như trên Docker Hub của bạn
-          REPO="dthh2/dthh2"
-          TAG="v4"
+          # Cấu hình thông tin Image v4 và Port mới
+          REPO="dthh2/dthh2:v4"
           CONTAINER_PORT=80
-          
-          # Lưu ý: Kiểm tra lại slot=2 hay slot=1 tùy theo giảng viên cấp cho bạn nhé
+     
+          # Gửi request Webhook đến server
           RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOY_URL }}?repo=$REPO&tag=$TAG&slot=2&container_port=$CONTAINER_PORT&strict_container_port=0")
           
-          # Tách nội dung JSON và HTTP Code
+          # Tách nội dung JSON và mã HTTP Code
           BODY=$(echo "$RESPONSE" | sed '$d')
           CODE=$(echo "$RESPONSE" | tail -n1)
           
           echo "Webhook HTTP Status: $CODE"
           
           if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 300 ]; then
-            echo "Deploy thất bại bản v4. Xem chi tiết bên dưới:"
+            echo "Deploy thất bại bản v4. Xem chi tiết lỗi bên dưới:"
             echo "::group::Chi tiết webhook JSON"
             echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
             echo "::endgroup::"
             exit 1
           fi
           
-          echo "Deploy thành công bản v4 lên DevOps Classroom."
+          echo "Deploy thành công bản v4 lên DevOps Classroom (Port $CONTAINER_PORT)."
           echo "::group::Chi tiết kết quả trả về"
           echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
           echo "::endgroup::"
