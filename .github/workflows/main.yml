@@ -52,7 +52,7 @@ jobs:
           CONTAINER_PORT=80
      
           # Gửi request Webhook đến server
-          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOY_URL }}?repo=$REPO&tag=$TAG&slot=2&container_port=$CONTAINER_PORT&strict_container_port=0")
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOYURL }}?repo=$REPO&tag=$TAG&slot=2&container_port=$CONTAINER_PORT&strict_container_port=0")
           
           # Tách nội dung JSON và mã HTTP Code
           BODY=$(echo "$RESPONSE" | sed '$d')
