@@ -47,11 +47,13 @@ jobs:
       # 6. Triển khai lên DevOps Classroom (Bước mới thêm vào)
       - name: Triển khai lên DevOps Classroom
         run: |
-          # Tự động lấy tên Repo từ GitHub Secret để đồng bộ với bước trên
-          REPO="${{ secrets.DOCKER_USERNAME }}/springboot-app"
+          # Sửa lại đúng tên Repo và Tag v4 như trên Docker Hub của bạn
+          REPO="dthh2/dthh2"
+          TAG="v4"
           CONTAINER_PORT=80
           
-          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOYURL }}?repo=$REPO&tag=latest&slot=2&container_port=$CONTAINER_PORT&strict_container_port=0")
+          # Lưu ý: Kiểm tra lại slot=2 hay slot=1 tùy theo giảng viên cấp cho bạn nhé
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "${{ secrets.DEPLOY_URL }}?repo=$REPO&tag=$TAG&slot=2&container_port=$CONTAINER_PORT&strict_container_port=0")
           
           # Tách nội dung JSON và HTTP Code
           BODY=$(echo "$RESPONSE" | sed '$d')
@@ -60,14 +62,14 @@ jobs:
           echo "Webhook HTTP Status: $CODE"
           
           if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 300 ]; then
-            echo "Deploy thất bại. Xem chi tiết bên dưới:"
+            echo "Deploy thất bại bản v4. Xem chi tiết bên dưới:"
             echo "::group::Chi tiết webhook JSON"
             echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
             echo "::endgroup::"
             exit 1
           fi
           
-          echo "Deploy thành công lên DevOps Classroom."
+          echo "Deploy thành công bản v4 lên DevOps Classroom."
           echo "::group::Chi tiết kết quả trả về"
           echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
           echo "::endgroup::"
